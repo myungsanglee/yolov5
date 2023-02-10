@@ -1,0 +1,87 @@
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+# path: /home/fssv2/myungsang/my_projects/datasets/voc
+path: /home/fssv2/myungsang/datasets/lpr
+train: train.txt # train images (relative to 'path')  110000 images
+val: val.txt # val images (relative to 'path')  5500 images
+test: # test images (optional)
+
+# Classes
+nc: 72  # number of classes
+names: [
+        '0',
+        '1',
+        '2',
+        '3',
+        '4',
+        '5',
+        '6',
+        '7',
+        '8',
+        '9',
+        'rk',
+        'sk',
+        'ek',
+        'fk',
+        'ak',
+        'rj',
+        'sj',
+        'ej',
+        'fj',
+        'aj',
+        'rh',
+        'sh',
+        'eh',
+        'fh',
+        'ah',
+        'rn',
+        'sn',
+        'en',
+        'fn',
+        'an',
+        'qj',
+        'tj',
+        'dj',
+        'wj',
+        'qh',
+        'th',
+        'dh',
+        'wh',
+        'qn',
+        'tn',
+        'dn',
+        'wn',
+        'gj',
+        'gk',
+        'gh',
+        'dk',
+        'qk',
+        'tk',
+        'wk',
+        'tjdnf',
+        'qntks',
+        'eorn',
+        'dlscjs',
+        'rhkdwn',
+        'eowjs',
+        'dnftks',
+        'rudrl',
+        'rkddnjs',
+        'cndqnr',
+        'cndska',
+        'wjsqnr',
+        'wjsska',
+        'rudqnr',
+        'rudska',
+        'wpwn',
+        'dhlry',
+        'dudtk',
+        'wnsdhl',
+        'wnsdud',
+        'rnrrl',
+        'guqwjd',
+        'eovy'
+]  # class names
+
+
+# Download script/URL (optional) ---------------------------------------------------------------------------------------
+download:
