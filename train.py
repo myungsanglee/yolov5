@@ -32,6 +32,7 @@ import torch.nn as nn
 import yaml
 from torch.optim import lr_scheduler
 from tqdm import tqdm
+import cv2
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -281,6 +282,13 @@ def train(hyp, opt, device, callbacks):  # hyp is path/to/hyp.yaml or hyp dictio
             pbar = tqdm(pbar, total=nb, bar_format=TQDM_BAR_FORMAT)  # progress bar
         optimizer.zero_grad()
         for i, (imgs, targets, paths, _) in pbar:  # batch -------------------------------------------------------------
+            # print(f'\n\nImage Size: {imgs.size()}\n\n')
+            # my_img = imgs[0].to('cpu').numpy().transpose((1, 2, 0))
+            # my_img = np.ascontiguousarray(my_img)
+            # my_img = cv2.cvtColor(my_img, cv2.COLOR_RGB2BGR)
+            # cv2.imshow('img', my_img)   
+            # cv2.waitKey(0)
+            
             callbacks.run('on_train_batch_start')
             ni = i + nb * epoch  # number integrated batches (since train start)
             imgs = imgs.to(device, non_blocking=True).float() / 255  # uint8 to float32, 0-255 to 0.0-1.0

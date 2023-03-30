@@ -121,6 +121,8 @@ def run(
     font = ImageFont.truetype('malgun.ttf', 30)
     with open('/home/fssv2/myungsang/datasets/lpr/lpr_kr.names') as f:
         name_list = f.read().splitlines()
+    true_num = 0
+    total_num = 0
     ##########################################################################
     
     
@@ -135,7 +137,8 @@ def run(
         txt_path = path.rsplit('.', 1)[0] + '.txt'
         with open(txt_path, 'r') as f:
             labels = f.read().splitlines()
-        labels = [[float(y) for y in x.split(' ')[1:]] for x in labels if x.split(' ')[0] == '8']
+        # labels = [[float(y) for y in x.split(' ')[1:]] for x in labels if x.split(' ')[0] == '8']
+        labels = [[float(y) for y in x.split(' ')[1:]] for x in labels if x.split(' ')[0] == '0']
         
         img_h, img_w, _ = im0s.shape
         
@@ -143,6 +146,8 @@ def run(
         draw = ImageDraw.Draw(img)
         
         for label in labels:
+            total_num += 1
+            
             cx = label[0] * img_w
             cy = label[1] * img_h
             w = label[2] * img_w
@@ -153,11 +158,14 @@ def run(
             xmax = int(cx + (w / 2))
             ymax = int(cy + (h / 2))
             
+            crop_img_height = ymax - ymin
+            
             draw.rectangle((xmin, ymin, xmax, ymax), outline=color, width=1)
         
             crop_img = im0s[ymin:ymax, xmin:xmax].copy()
             
             im = letterbox(crop_img, imgsz, stride=stride, auto=pt)[0]
+            
             im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
             im = np.ascontiguousarray(im)  # contiguous
         
@@ -174,6 +182,7 @@ def run(
             # Inference
             with dt[1]:
                 visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
+                
                 pred = model(im, augment=augment, visualize=visualize)
                 # print(pred[0].size())
             
@@ -230,8 +239,7 @@ def run(
                             annotator.box_label(xyxy, label, color=colors(c, True))
                         if save_crop:
                             save_one_box(xyxy, imc, file=save_dir / 'crops' / names[c] / f'{p.stem}.jpg', BGR=True)
-
-
+                        
                         ############################################################################################
                         c = int(cls)  # integer class
                         label = None if hide_labels else (names[c] if hide_conf else f'{names[c]} {conf:.2f}')
@@ -241,8 +249,13 @@ def run(
                     
                     ############################################################################################
                     detections = np.array(detections)
-                    plate_num, detections = get_plate_number(detections, imgsz[0], name_list)
-                    print(plate_num)
+                    plate_num, detections = get_plate_number(detections, crop_img_height, name_list)
+                    true_label = os.path.basename(path).rsplit('.', 1)[0]
+                    if len(true_label.split('-')) > 1:
+                        true_label = true_label.split('-')[0]
+                    if plate_num == true_label:
+                        true_num += 1
+                    print(f'True: {true_label}, Pred: {plate_num}')
                     
                     txt_w, txt_h = draw.textsize(plate_num, font=font)
                     draw.text(((xmin, max(ymin - txt_h, 0))), f'{plate_num}', font=font, fill=color)
@@ -257,6 +270,11 @@ def run(
                         pymax = ymin + int(y2)
                         
                         draw.rectangle((pxmin, pymin, pxmax, pymax), outline=color, width=1)
+                    
+                    # conf_str = ''
+                    # for conf in detections[..., 1]:
+                    #     conf_str += f'{conf:.4f} '
+                    # print(conf_str)
                     ############################################################################################
                     
 
@@ -292,17 +310,25 @@ def run(
             LOGGER.info(f"{s}{'' if len(det) else '(no detections), '}{dt[1].dt * 1E3:.1f}ms")
 
         ############################################################################################
-        img = np.array(img)
-        # cv2.imshow('dd', img)
-        # cv2.waitKey(0)
+        # Show Image
+        # img = np.array(img)
+        # cv2.namedWindow('img', cv2.WINDOW_NORMAL)
+        # cv2.resizeWindow('img', 1080, 720)
+        # cv2.imshow('img', img)
+        # key = cv2.waitKey(0)
+        # if key == 27:
+        #     break
         
         # Save Image
-        new_dir = os.path.join('/home/fssv2/myungsang/datasets/lpr/pytorch_test', path.split(os.sep)[-2])
-        if not os.path.isdir(new_dir):
-            os.makedirs(new_dir, exist_ok=True)
-        new_path = os.path.join(new_dir, os.path.basename(path))
-        cv2.imwrite(new_path, img)
+        # new_dir = os.path.join('/home/fssv2/myungsang/datasets/lpr/pytorch_test_3', path.split(os.sep)[-2])
+        # new_dir = os.path.join('/home/fssv2/myungsang/datasets/lpr/pytorch_test_3')
+        # if not os.path.isdir(new_dir):
+        #     os.makedirs(new_dir, exist_ok=True)
+        # new_path = os.path.join(new_dir, os.path.basename(path))
+        # cv2.imwrite(new_path, img)
         ############################################################################################
+
+    print(f'Accuracy: {true_num} / {total_num} = {(true_num / total_num)*100:.2f}%')
 
     # Print results
     t = tuple(x.t / seen * 1E3 for x in dt)  # speeds per image
@@ -322,7 +348,7 @@ def get_plate_number(detections, network_height, cls_name_list):
         detections = np.delete(detections, np.argsort(detections[..., 1])[:detect_num-8], axis=0)
     detections = detections[np.argsort(detections[..., 3])]
     
-    thresh = int(network_height / 4)
+    thresh = int(network_height / 5)
     y1 = detections[1][3] - detections[0][3]
     y2 = detections[3][3] - detections[2][3]
     
@@ -339,11 +365,47 @@ def get_plate_number(detections, network_height, cls_name_list):
     else:
         detections = detections[np.argsort(detections[..., 2])]
 
+    # 번호판 포맷에 맞는지 체크
+    detections = check_plate(detections)
+
     plate_num = ''
     for cls_idx in detections[..., 0]:
         plate_num += cls_name_list[int(cls_idx)]
     
     return plate_num, detections
+
+
+def check_plate(detections):
+    # 가, 나, 다, ... 번호는 하나만 존재하고 그 뒤의 번호는 4자리만 올 수 있다.
+    str_idx_list = np.where((10<=detections[..., 0]) & (detections[..., 0]<=48))[0]
+    if len(str_idx_list):
+        if len(str_idx_list) > 1:
+            arg_idx = np.argsort(-detections[str_idx_list][..., 1])
+            delete_idx = str_idx_list[arg_idx[1:]]
+            detections = np.delete(detections, delete_idx, axis=0)
+            str_idx = str_idx_list[arg_idx[0]]
+        else:
+            str_idx = str_idx_list[0]
+            
+        if len(detections[str_idx+1:]) > 4:
+            delete_idx = np.argsort(-detections[str_idx+1:, 1])[4:] + (str_idx + 1)
+            detections = np.delete(detections, delete_idx, axis=0)
+
+    # 서울, 경기, ... 지역 번호는 하나만 존재
+    area_idx_list = np.where((49<=detections[..., 0]) & (detections[..., 0]<=64))[0]
+    if len(area_idx_list) > 1:
+        arg_idx = np.argsort(-detections[area_idx_list][..., 1])
+        delete_idx = area_idx_list[arg_idx[1:]]
+        detections = np.delete(detections, delete_idx, axis=0)
+    
+    # 외교, 영사, ... 번호는 하나만 존재
+    diplomacy_idx_list = np.where(64 < detections[..., 0])[0]
+    if len(diplomacy_idx_list) > 1:
+        arg_idx = np.argsort(-detections[diplomacy_idx_list][..., 1])
+        delete_idx = diplomacy_idx_list[arg_idx[1:]]
+        detections = np.delete(detections, delete_idx, axis=0)
+    
+    return detections
 
 
 def parse_opt():

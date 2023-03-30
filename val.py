@@ -28,6 +28,7 @@ from pathlib import Path
 import numpy as np
 import torch
 from tqdm import tqdm
+import cv2
 
 FILE = Path(__file__).resolve()
 ROOT = FILE.parents[0]  # YOLOv5 root directory
@@ -195,6 +196,13 @@ def run(
     callbacks.run('on_val_start')
     pbar = tqdm(dataloader, desc=s, bar_format=TQDM_BAR_FORMAT)  # progress bar
     for batch_i, (im, targets, paths, shapes) in enumerate(pbar):
+        # print(f'\n\nImage Size: {im.size()}\n\n')
+        # my_img = im[0].to('cpu').numpy().transpose((1, 2, 0))
+        # my_img = np.ascontiguousarray(my_img)
+        # my_img = cv2.cvtColor(my_img, cv2.COLOR_RGB2BGR)
+        # cv2.imshow('img', my_img)   
+        # cv2.waitKey(0)
+        
         callbacks.run('on_val_batch_start')
         with dt[0]:
             if cuda:
