@@ -2,12 +2,12 @@
 # path: /home/fssv2/myungsang/my_projects/datasets/voc
 path: /home/fssv2/myungsang/datasets/lpr
 # train: train.txt # train images (relative to 'path')  110000 images
-train: tmp.txt # train images (relative to 'path')  110000 images
-val: tmp.txt # val images (relative to 'path')  5500 images
+train: train_v3.txt # train images (relative to 'path')  110000 images
+val: val_v3.txt # val images (relative to 'path')  5500 images
 test: # test images (optional)
 
 # Classes
-nc: 72  # number of classes
+nc: 73  # number of classes
 names: [
         '0',
         '1',
@@ -80,7 +80,8 @@ names: [
         'wnsdud',
         'rnrrl',
         'guqwjd',
-        'eovy'
+        'eovy',
+        'qo'
 ]  # class names
 
 
