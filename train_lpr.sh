@@ -5,6 +5,6 @@ python train.py \
 --hyp data/hyps/hyp.lpr.yaml \
 --epochs 300 \
 --batch-size 128 \
---img 224 \
---device '0' \
+--img [64, 224] \
+--device '1' \
 --workers 32
