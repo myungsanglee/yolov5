@@ -8,6 +8,7 @@ test: # test images (optional)
 
 # Classes
 nc: 73  # number of classes
+
 names: [
         '0',
         '1',

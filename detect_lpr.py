@@ -255,6 +255,9 @@ def run(
                         true_label = true_label.split('-')[0]
                     if plate_num == true_label:
                         true_num += 1
+                        
+                        # save_label(crop_img.copy(), detections, true_num)
+                    
                     print(f'True: {true_label}, Pred: {plate_num}')
                     
                     txt_w, txt_h = draw.textsize(plate_num, font=font)
@@ -262,7 +265,7 @@ def run(
                     
                     # draw plate number
                     for detection in detections:
-                        _, _, x1, y1, x2, y2 = detection
+                        cls_idx, conf, x1, y1, x2, y2 = detection
                         
                         pxmin = xmin + int(x1)
                         pxmax = xmin + int(x2)
@@ -339,6 +342,31 @@ def run(
     if update:
         strip_optimizer(weights[0])  # update model (to fix SourceChangeWarning)
 
+
+def save_label(img, detections, true_num):
+    img_h, img_w, _ = img.shape
+    
+    output_dir = '/home/fssv2/myungsang/datasets/lpr/val_v4'
+    output_jpg_path = os.path.join(output_dir, f'val_v4_data_{true_num:04d}.jpg')
+    output_txt_path = output_jpg_path.rsplit('.', 1)[0] + '.txt'
+    
+    cv2.imwrite(output_jpg_path, img)
+    
+    f = open(output_txt_path, 'w')
+    
+    for detection in detections:
+        cls_idx, conf, x1, y1, x2, y2 = detection
+
+        cx = (x1 + x2) / 2 / img_w
+        cy = (y1 + y2) / 2 / img_h
+        w = (x2 - x1) / img_w
+        h = (y2 - y1) / img_h
+        
+        label = f'{int(cls_idx)} {cx} {cy} {w} {h}\n'
+        f.write(label)
+    
+    
+        
 
 def get_plate_number(detections, network_height, cls_name_list):
     detect_num = len(detections)
