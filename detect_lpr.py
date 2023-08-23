@@ -164,6 +164,9 @@ def run(
         
             crop_img = im0s[ymin:ymax, xmin:xmax].copy()
             
+            print('')
+            print(f'stride: {stride}, pt: {pt}')
+            print('')
             im = letterbox(crop_img, imgsz, stride=stride, auto=pt)[0]
             
             im = im.transpose((2, 0, 1))[::-1]  # HWC to CHW, BGR to RGB
@@ -184,7 +187,7 @@ def run(
                 visualize = increment_path(save_dir / Path(path).stem, mkdir=True) if visualize else False
                 
                 pred = model(im, augment=augment, visualize=visualize)
-                # print(pred[0].size())
+                print(pred[0].size())
             
             # NMS
             with dt[2]:

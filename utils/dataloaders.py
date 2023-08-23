@@ -505,6 +505,11 @@ class LoadImagesAndLabels(Dataset):
         # Read cache
         [cache.pop(k) for k in ('hash', 'version', 'msgs')]  # remove items
         labels, shapes, self.segments = zip(*cache.values())
+        
+        # print('')
+        # print(f'[labels]\n{labels}\n\n[shapes]\n{shapes}\n')
+        # print('')
+        
         nl = len(np.concatenate(labels, 0))  # number of labels
         assert nl > 0 or not augment, f'{prefix}All labels empty in {cache_path}, can not start training. {HELP_URL}'
         self.labels = list(labels)

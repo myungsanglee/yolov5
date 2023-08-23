@@ -116,26 +116,4 @@ import shutil
 # print(tmp)
 
 
-def solution(ingredient):
-    answer = 0
-
-    return answer
-
-
-if __name__ == "__main__":
-    ingredient = [2, 1, 1, 2, 3, 1, 2, 3, 1]
-    print(solution(ingredient))
-
-
-    LOCAL_RANK = int(os.getenv('LOCAL_RANK', -1))  # https://pytorch.org/docs/stable/elastic/run.html
-    RANK = int(os.getenv('RANK', -1))
-    WORLD_SIZE = int(os.getenv('WORLD_SIZE', 1))
-    
-    print(LOCAL_RANK)
-    print(RANK)
-    print(WORLD_SIZE)
-    
-    a = a_ = 10 
-    
-    print(a)
-    print(a_)
+print(np.mod(33, 32))

@@ -2,8 +2,8 @@
 # path: /home/fssv2/myungsang/my_projects/datasets/voc
 path: /home/fssv2/myungsang/datasets/lpr
 # train: train.txt # train images (relative to 'path')  110000 images
-train: train_v3.txt # train images (relative to 'path')  110000 images
-val: val_v3.txt # val images (relative to 'path')  5500 images
+train: train_v5.txt # train images (relative to 'path')  110000 images
+val: val_v5.txt # val images (relative to 'path')  5500 images
 test: # test images (optional)
 
 # Classes

@@ -1,0 +1,14 @@
+# Train/val/test sets as 1) dir: path/to/imgs, 2) file: path/to/imgs.txt, or 3) list: [path/to/imgs1, path/to/imgs2, ..]
+# path: /home/fssv2/myungsang/my_projects/datasets/voc
+path: /home/fssv2/myungsang/datasets/test
+# train: train.txt # train images (relative to 'path')  110000 images
+train: test.txt 
+val: test.txt 
+test: # test images (optional)
+
+# Classes
+nc: 1  # number of classes
+names: ['porsche']  # class names
+
+# Download script/URL (optional) ---------------------------------------------------------------------------------------
+download:

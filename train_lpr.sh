@@ -6,5 +6,5 @@ python train.py \
 --epochs 300 \
 --batch-size 128 \
 --img 224 \
---device '0' \
+--device '1' \
 --workers 32
